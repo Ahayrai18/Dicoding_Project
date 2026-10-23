@@ -1,0 +1,543 @@
+# Beijing Multi-Site Air Quality Analysis
+
+Analysis of hourly air quality measurements from 12 monitoring stations in Beijing, with a focus on PM2.5. The project covers 1 March 2013 to 28 February 2017 and includes data cleaning, exploratory analysis, business-oriented findings, manual grouping/binning, geospatial analysis, and an interactive Streamlit dashboard.
+
+The main goal is to make the PM2.5 patterns easy to explore at station, time, trend, weather, and location levels.
+
+## Project Overview
+
+The analysis is organized around four business questions:
+
+1. Which station has the highest and lowest average PM2.5 concentration, and what percentage of valid days exceed the daily limit of 75 µg/m³?
+2. In which month and at which hour is PM2.5 highest and lowest, and how large is the difference?
+3. How does the average PM2.5 level change between the 2013/14 and 2016/17 periods, and how far is the latest level from the annual limit of 35 µg/m³?
+4. How strongly is PM2.5 related to weather variables and other pollutants, and at what wind-speed range does the average PM2.5 level fall below 75 µg/m³?
+
+The project also includes two additional analyses:
+
+- Manual binning of daily PM2.5 into air-quality categories.
+- Geospatial analysis using approximate station coordinates to compare PM2.5 by distance from central Beijing.
+
+No machine learning model is used in this project.
+
+## Key Findings
+
+The following results come from the full analysis period (1 March 2013 – 28 February 2017).
+
+### 1. Station comparison
+
+- **Dongsi** has the highest mean PM2.5 concentration: **86.1 µg/m³**.
+- **Dingling** has the lowest mean PM2.5 concentration: **66.3 µg/m³**.
+- The highest station mean is about **30% higher** than the lowest station mean.
+- The percentage of valid station-days above **75 µg/m³** ranges from **31.6%** at Dingling to **43.4%** at Dongsi.
+- Across all stations, the average PM2.5 level remains well above the annual reference value of **35 µg/m³**.
+
+### 2. Monthly and hourly patterns
+
+- Monthly PM2.5 is highest in **December: 104.4 µg/m³**.
+- Monthly PM2.5 is lowest in **August: 53.5 µg/m³**.
+- December is about **95% higher** than August.
+- The overall hourly peak occurs at **22:00: 89.1 µg/m³**.
+- The overall hourly low occurs at **07:00: 73.3 µg/m³**.
+- The winter pattern is much stronger than the summer pattern, with the highest values concentrated during the evening and night.
+
+### 3. Year-to-year trend
+
+The yearly periods are defined as March–February so that every period contains a complete 12 months:
+
+| Period | Mean PM2.5 (µg/m³) |
+|---|---:|
+| 2013/14 | 87.1 |
+| 2014/15 | 81.4 |
+| 2015/16 | 73.0 |
+| 2016/17 | 78.0 |
+
+- From **2013/14 to 2016/17**, the average PM2.5 level decreased by **10.5%**.
+- The lowest period in the dataset is **2015/16 (73.0 µg/m³)**.
+- The average increased by about **6.9%** from 2015/16 to 2016/17.
+- The latest period is about **2.2 times** the annual reference value of **35 µg/m³**.
+
+These four yearly periods are useful for describing the observed trend, but they are not enough to establish a causal relationship between policy changes and air-quality improvements.
+
+### 4. Weather and pollutant relationships
+
+Pearson correlation with PM2.5:
+
+| Variable | Pearson r |
+|---|---:|
+| CO | +0.79 |
+| NO2 | +0.67 |
+| SO2 | +0.48 |
+| DEWP | +0.11 |
+| PRES | +0.02 |
+| RAIN | -0.01 |
+| TEMP | -0.13 |
+| O3 | -0.15 |
+| WSPM | -0.27 |
+
+The strongest positive relationship is with **CO**, followed by **NO2** and **SO2**. Among the weather variables, **wind speed (WSPM)** has the strongest relationship with PM2.5.
+
+The wind-speed grouping shows a clearer pattern than the linear correlation alone:
+
+| Wind speed | Mean PM2.5 (µg/m³) |
+|---|---:|
+| ≤ 0.5 m/s | 103.9 |
+| 0.5–1 m/s | 101.2 |
+| 1–1.5 m/s | 90.6 |
+| 1.5–2 m/s | 75.5 |
+| 2–3 m/s | 59.3 |
+| 3–4 m/s | 41.0 |
+| > 4 m/s | 28.6 |
+
+The first wind-speed category where the average PM2.5 falls below **75 µg/m³** is **2–3 m/s**.
+
+## Data Source
+
+The project uses the Beijing Multi-Site Air-Quality (PRSA) dataset containing hourly measurements from 12 monitoring stations.
+
+- Dataset file: [Air Quality Dataset – Google Drive](https://drive.google.com/file/d/1RhU3gJlkteaAQfyn9XOVAz7a5o1-etgr/view?usp=share_link)
+- Source repository: [marceloreis/HTI – GitHub](https://github.com/marceloreis/HTI/tree/master)
+
+The source repository contains the original PRSA station files under `PRSA_Data_20130301-20170228`.
+
+The analysis period in this project is **1 March 2013 to 28 February 2017**.
+
+### Dataset size
+
+- **12 stations**
+- **420,768 hourly records**
+- **35,064 hours per station**
+- **18 columns in the original station files**
+- The cleaned dashboard dataset contains **420,768 rows × 14 exported columns**
+
+Stations included:
+
+- Aotizhongxin
+- Changping
+- Dingling
+- Dongsi
+- Guanyuan
+- Gucheng
+- Huairou
+- Nongzhanguan
+- Shunyi
+- Tiantan
+- Wanliu
+- Wanshouxigong
+
+## Variables
+
+The original dataset contains the following fields:
+
+| Column | Description |
+|---|---|
+| `No` | Row number in the original station file |
+| `year` | Year |
+| `month` | Month |
+| `day` | Day |
+| `hour` | Hour |
+| `PM2.5` | Fine particulate matter concentration |
+| `PM10` | Particulate matter concentration |
+| `SO2` | Sulfur dioxide |
+| `NO2` | Nitrogen dioxide |
+| `CO` | Carbon monoxide |
+| `O3` | Ozone |
+| `TEMP` | Temperature |
+| `PRES` | Atmospheric pressure |
+| `DEWP` | Dew point temperature |
+| `RAIN` | Rainfall |
+| `wd` | Wind direction |
+| `WSPM` | Wind speed |
+| `station` | Monitoring station name |
+
+The cleaned `dashboard/main_data.csv` keeps:
+
+- `datetime`
+- `station`
+- `PM2.5`
+- `PM10`
+- `SO2`
+- `NO2`
+- `CO`
+- `O3`
+- `TEMP`
+- `PRES`
+- `DEWP`
+- `RAIN`
+- `WSPM`
+- `wd`
+
+## Data Cleaning
+
+The notebook performs the cleaning before the analysis and exports the cleaned hourly dataset used by the dashboard.
+
+### 1. Load and combine all station files
+
+The 12 station CSV files are read and concatenated into a single DataFrame.
+
+### 2. Build a datetime column
+
+The original `year`, `month`, `day`, and `hour` fields are combined into a single `datetime` column.
+
+### 3. Check duplicates and invalid values
+
+The dataset is checked for:
+
+- duplicate rows
+- duplicate station-hour combinations
+- negative pollutant concentrations
+- wind-direction categories
+- complete hourly coverage for each station
+- impossible PM2.5 > PM10 combinations
+
+The original dataset contains no duplicate station-hour records and no negative concentration values.
+
+### 4. Fill short missing-value gaps
+
+Numeric variables are linearly interpolated for short gaps of up to **6 consecutive hours**, only inside an existing station time series. Longer gaps remain missing.
+
+Wind direction uses forward filling with the same 6-hour limit.
+
+This approach avoids filling large missing periods while still reducing small gaps in the hourly series.
+
+### 5. Handle invalid PM10 values
+
+Because PM10 should not be lower than PM2.5 in this dataset, rows where:
+
+```text
+PM10 < PM2.5
+```
+
+are treated as invalid and PM10 is set to missing.
+
+### 6. Preserve extreme PM2.5 events
+
+Extreme values are reviewed with an IQR-based outlier check, but the analysis does not automatically remove all statistical outliers.
+
+This is important because very high PM2.5 values can represent real pollution episodes rather than sensor errors. In the raw data, most PM2.5 values above 500 µg/m³ occur next to another hour above 300 µg/m³, which indicates that many of the extreme observations are part of sustained episodes.
+
+## Daily PM2.5 Calculation
+
+For analyses that use daily PM2.5, the daily mean is calculated separately for each station.
+
+A station-day is considered valid only when at least **20 valid hourly PM2.5 observations** are available.
+
+This produces:
+
+- **17,309 valid station-days**
+- out of **17,532 possible station-days**
+
+The daily dataset is then used for:
+
+- the percentage of days above 75 µg/m³
+- PM2.5 air-quality categories
+- seasonal comparisons based on daily values
+
+## Reference Values Used
+
+The project uses the following PM2.5 reference values from the China GB 3095-2012 Grade II standard as defined in the analysis:
+
+- **Daily reference: 75 µg/m³**
+- **Annual reference: 35 µg/m³**
+
+These thresholds are used as reference lines and comparison points throughout the notebook and dashboard.
+
+## Manual Binning / Air-Quality Categories
+
+Daily PM2.5 values are grouped using the following concentration ranges:
+
+| Daily PM2.5 (µg/m³) | Project category |
+|---|---|
+| ≤ 35 | Very good |
+| 35–75 | Good |
+| 75–115 | Lightly polluted |
+| 115–150 | Moderately polluted |
+| 150–250 | Heavily polluted |
+| > 250 | Very heavily polluted |
+
+This is a manual `pandas.cut()` grouping approach. It is not a machine-learning classification model.
+
+Across the full dataset:
+
+- About **60%** of valid station-days fall into the `Very good` or `Good` groups (≤ 75 µg/m³).
+- About **40%** are above 75 µg/m³.
+- About **13%** are in the `Heavily polluted` or `Very heavily polluted` groups (> 150 µg/m³).
+- Winter has a much larger share of heavy-pollution days than summer.
+
+## Geospatial Analysis
+
+The dataset does not provide station coordinates. For the map visualizations, approximate coordinates were manually compiled for the 12 stations.
+
+The project uses these coordinates only for visualization and distance grouping. They are not used to change PM2.5 measurements or other analytical values.
+
+The reference point is central Beijing (Tiananmen area), and stations are grouped into:
+
+- **City center:** ≤ 10 km
+- **Inner outskirts:** 10–30 km
+- **Outer outskirts:** > 30 km
+
+The analysis shows:
+
+| Distance zone | Stations | Mean PM2.5 (µg/m³) |
+|---|---:|---:|
+| City center (≤ 10 km) | 6 | 84.0 |
+| Inner outskirts (10–30 km) | 2 | 83.7 |
+| Outer outskirts (> 30 km) | 4 | 71.7 |
+
+Because the coordinates are approximate and the dataset does not contain official station coordinates, the geospatial results should be treated as descriptive rather than precise spatial measurements.
+
+## Dashboard
+
+The Streamlit dashboard has a sidebar for:
+
+- date range selection
+- station selection
+
+The dashboard contains five tabs.
+
+### `1 · Stations`
+
+Shows:
+
+- mean PM2.5 by station
+- median PM2.5
+- percentage of valid days above 75 µg/m³
+- comparison with the 35 µg/m³ annual reference
+
+### `2 · Time`
+
+Shows:
+
+- monthly PM2.5 profile
+- hourly PM2.5 profile
+- seasonal hourly patterns
+
+### `3 · Trend`
+
+Shows:
+
+- mean PM2.5 by March–February period
+- station-level change between the first and latest period
+
+The trend tab always uses the full date range so that each March–February period remains complete. The selected station filter still applies.
+
+### `4 · Weather`
+
+Shows:
+
+- Pearson correlation between PM2.5 and other pollutants/weather variables
+- PM2.5 by wind-speed category
+- the first wind-speed category where the average PM2.5 falls below 75 µg/m³
+
+### `Advanced Analysis`
+
+Shows:
+
+- manual air-quality binning
+- seasonal/category distribution
+- station-level geospatial visualization
+- distance-zone summaries
+- an interactive Folium map
+- CSV download for the filtered daily data
+
+## Project Structure
+
+```text
+submission/
+├── dashboard/
+│   ├── dashboard.py
+│   └── main_data.csv
+├── data/
+│   ├── PRSA_Data_Aotizhongxin_20130301-20170228.csv
+│   ├── PRSA_Data_Changping_20130301-20170228.csv
+│   ├── PRSA_Data_Dingling_20130301-20170228.csv
+│   ├── PRSA_Data_Dongsi_20130301-20170228.csv
+│   ├── PRSA_Data_Guanyuan_20130301-20170228.csv
+│   ├── PRSA_Data_Gucheng_20130301-20170228.csv
+│   ├── PRSA_Data_Huairou_20130301-20170228.csv
+│   ├── PRSA_Data_Nongzhanguan_20130301-20170228.csv
+│   ├── PRSA_Data_Shunyi_20130301-20170228.csv
+│   ├── PRSA_Data_Tiantan_20130301-20170228.csv
+│   ├── PRSA_Data_Wanliu_20130301-20170228.csv
+│   └── PRSA_Data_Wanshouxigong_20130301-20170228.csv
+├── .streamlit/
+│   └── config.toml
+├── notebook.ipynb
+├── README.md
+├── requirements.txt
+└── url.txt
+```
+
+## Requirements
+
+- Python 3.11
+- pandas
+- NumPy
+- Matplotlib
+- Folium
+- Streamlit
+
+The exact package requirements are listed in `requirements.txt`.
+
+## Installation
+
+### Option 1: Anaconda
+
+```bash
+conda create --name main-ds python=3.11
+conda activate main-ds
+pip install -r requirements.txt
+```
+
+### Option 2: Python virtual environment
+
+From the project root:
+
+```bash
+cd submission
+python -m venv .venv
+```
+
+Activate the environment:
+
+**macOS / Linux**
+```bash
+source .venv/bin/activate
+```
+
+**Windows**
+```powershell
+.venv\Scripts\activate
+```
+
+Then install the dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Run the Notebook
+
+Open `notebook.ipynb` using Jupyter Notebook, JupyterLab, VS Code, or Google Colab.
+
+For a local Jupyter setup:
+
+```bash
+pip install jupyter
+jupyter notebook
+```
+
+Run the notebook from the `submission` directory so that the relative `data/` path is available.
+
+Running the notebook will:
+
+1. Load all 12 raw station files.
+2. Clean and validate the data.
+3. Create the cleaned hourly dataset.
+4. Run the exploratory analysis.
+5. Generate the figures and analytical findings.
+6. Export the cleaned data to:
+
+```text
+dashboard/main_data.csv
+```
+
+## Run the Streamlit Dashboard
+
+Run this command from the `submission` directory:
+
+```bash
+streamlit run dashboard/dashboard.py
+```
+
+The dashboard will normally be available at:
+
+```text
+http://localhost:8501
+```
+
+## Deploy to Streamlit Community Cloud
+
+1. Push the complete `submission` folder to a GitHub repository.
+2. Open [Streamlit Community Cloud](https://share.streamlit.io/).
+3. Create a new app.
+4. Select the GitHub repository and branch.
+5. Set the main file to:
+
+```text
+dashboard/dashboard.py
+```
+
+6. Deploy the app.
+7. Copy the deployed URL into `url.txt`.
+
+Example:
+
+```text
+https://your-app-name.streamlit.app/
+```
+
+## Reproducibility
+
+The expected workflow is:
+
+```text
+Raw station CSV files
+        ↓
+notebook.ipynb
+        ↓
+Data cleaning + validation
+        ↓
+Exploratory analysis
+        ↓
+dashboard/main_data.csv
+        ↓
+dashboard/dashboard.py
+        ↓
+Streamlit app
+```
+
+`dashboard/main_data.csv` is generated by the notebook rather than being the original source dataset.
+
+## Limitations
+
+There are several limitations to keep in mind when interpreting the results:
+
+1. **The dataset ends in February 2017.** The project describes historical data and does not represent current air quality in Beijing.
+2. **Correlation is not causation.** A high correlation between PM2.5 and another variable does not prove that one directly causes the other.
+3. **The annual periods are only four periods long.** This is enough for descriptive trend analysis but not for strong causal conclusions.
+4. **Station coordinates are approximate.** The raw dataset does not contain coordinates, so the map and distance analysis are intended for visualization and exploratory comparison.
+5. **Short gaps are interpolated.** Gaps longer than six hours are not filled.
+6. **Daily values require at least 20 valid hourly observations.** Some incomplete days are therefore excluded from daily analyses.
+7. **Extreme values are retained.** The cleaning process does not simply delete all statistical outliers because some extreme PM2.5 observations form sustained pollution episodes.
+8. **The AQI grouping is concentration-based.** The project uses PM2.5 concentration ranges for manual binning rather than calculating a complete AQI from all pollutants.
+
+## Notes on Interpretation
+
+The project is primarily descriptive. The dashboard is designed to answer practical questions such as:
+
+- Which stations have the highest PM2.5 levels?
+- When are pollution levels highest?
+- How has the average changed across the four yearly periods?
+- Which variables move together with PM2.5?
+- How does wind speed relate to PM2.5?
+- Are there visible spatial differences between central and outer monitoring locations?
+
+The findings should therefore be read as patterns observed in this dataset rather than as causal or policy-effect estimates.
+
+## License and Data Attribution
+
+The project code does not currently declare a separate software license.
+
+The original data source and its repository should be credited when the dataset is reused:
+
+- [Air Quality Dataset – Google Drive](https://drive.google.com/file/d/1RhU3gJlkteaAQfyn9XOVAz7a5o1-etgr/view?usp=share_link)
+- [marceloreis/HTI – GitHub](https://github.com/marceloreis/HTI/tree/master)
+
+The referenced GitHub repository is published under the **GPL-3.0 license**. Check the original repository license and dataset terms before redistributing the source data.
+
+## Author
+
+**Raihan Muzhaffar Athallah**
+
+Final Project — Fundamental Data Analysis
